@@ -30,7 +30,7 @@ class Flame: CIFilter
     var inputWidth: CGFloat = 640
     var inputHeight: CGFloat = 640
     
-    override var attributes: [String : AnyObject]
+    override var attributes: [String : Any]
     {
         return [
             kCIAttributeFilterDisplayName: "Flame",
@@ -157,11 +157,11 @@ class Flame: CIFilter
     
     let flameKernel: CIColorKernel =
     {
-        let shaderPath = NSBundle.mainBundle().pathForResource("flame", ofType: "cikernel")
+        let shaderPath = Bundle.main.path(forResource: "flame", ofType: "cikernel")
         
         guard let path = shaderPath,
-            code = try? String(contentsOfFile: path),
-            kernel = CIColorKernel(string: code) else
+            let code = try? String(contentsOfFile: path),
+              let kernel = CIColorKernel(source: code) else
         {
             fatalError("Unable to build Flame shader")
         }
@@ -171,7 +171,7 @@ class Flame: CIFilter
     
     override var outputImage: CIImage?
     {
-        let arguments = [inputTime / 1000.0, CIVector(x: inputWidth, y: inputHeight),
+        let arguments:[Any] = [inputTime / 1000.0, CIVector(x: inputWidth, y: inputHeight),
                          inputIterations, inputAnisotropy, inputEdgeDefinition,
                          inputHotspotExponent, inputDensity,
                          inputRedMultiplier, inputRedExponent,
@@ -179,8 +179,8 @@ class Flame: CIFilter
                          inputBlueMultiplier, inputBlueExponent,
                          inputStrength]
         
-        return flameKernel.applyWithExtent(
-            CGRect(origin: CGPointZero, size: CGSize(width: inputWidth, height: inputHeight)),
+        return flameKernel.apply(
+            extent: CGRect(origin: CGPointZero, size: CGSize(width: inputWidth, height: inputHeight)),
             arguments: arguments)
     }
     

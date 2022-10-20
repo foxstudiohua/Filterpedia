@@ -10,37 +10,48 @@ import UIKit
 
 class ViewController: UIViewController
 {
-    let filterNavigator = FilterNavigator()
-    let filterDetail = FilterDetail()
+    private lazy var filterNavigator:FilterNavigator = {
+        return FilterNavigator()
+    }()
+    
+    private lazy var filterDetail:FilterDetail = {
+        return FilterDetail()
+    }()
+    
+    private lazy var bedView:UIView = {
+        let view = UIView(frame: .zero)
+        
+        return view
+    }()
     
     override func viewDidLoad()
     {
         super.viewDidLoad()
        
-        view.addSubview(filterNavigator)
-        view.addSubview(filterDetail)
-        
+        self.view.addSubview(self.bedView)
+        self.bedView.addSubview(self.filterNavigator)
+        self.bedView.addSubview(self.filterDetail)
         filterNavigator.delegate = self
     }
 
     override func viewDidLayoutSubviews()
     {
-        filterNavigator.frame = CGRect(x: 0,
-            y: topLayoutGuide.length,
-            width: 300,
-            height: view.frame.height - topLayoutGuide.length).insetBy(dx: 5, dy: 5)
+        self.bedView.frame = self.view.bounds.inset(by: self.view.safeAreaInsets)
+        let span = self.bedView.width
+        let vSpan = self.bedView.height
+        let leftSpan:CGFloat = 300
         
-        filterDetail.frame = CGRect(x: 300,
-            y: topLayoutGuide.length,
-            width: view.frame.width - 300,
-            height: view.frame.height - topLayoutGuide.length).insetBy(dx: 5, dy: 5)
+        self.filterNavigator.frame = CGRect(x: 0, y: 0, width: leftSpan, height: vSpan)
+        self.filterDetail.frame = CGRect(x: leftSpan, y: 0, width: span-leftSpan, height: vSpan)
     }
 }
 
 extension ViewController: FilterNavigatorDelegate
 {
-    func filterNavigator(filterNavigator: FilterNavigator, didSelectFilterName: String)
+    func filterNavigator(_ filterNavigator: FilterNavigator, didSelectFilterName: String)
     {
         filterDetail.filterName = didSelectFilterName
     }
 }
+
+
