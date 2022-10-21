@@ -27,10 +27,10 @@ import Accelerate
 
 class CircularBokeh: CIFilter, VImageFilter
 {
-    var inputImage: CIImage?
-    var inputBlurRadius: CGFloat = 2
+    @objc var inputImage: CIImage?
+    @objc var inputBlurRadius: CGFloat = 2
     
-    var inputBokehRadius: CGFloat = 15
+    @objc var inputBokehRadius: CGFloat = 15
     {
         didSet
         {
@@ -38,7 +38,7 @@ class CircularBokeh: CIFilter, VImageFilter
         }
     }
     
-    var inputBokehBias: CGFloat = 0.25
+    @objc var inputBokehBias: CGFloat = 0.25
     {
         didSet
         {
@@ -170,7 +170,7 @@ class CircularBokeh: CIFilter, VImageFilter
 
 class HistogramEqualization: CIFilter, VImageFilter
 {
-    var inputImage: CIImage?
+    @objc var inputImage: CIImage?
     
     override var attributes: [String : Any]
     {
@@ -237,15 +237,15 @@ class HistogramEqualization: CIFilter, VImageFilter
 
 class EndsInContrastStretch: CIFilter, VImageFilter
 {
-    var inputImage: CIImage?
+    @objc var inputImage: CIImage?
     
-    var inputPercentLowRed: CGFloat = 0
-    var inputPercentLowGreen: CGFloat = 0
-    var inputPercentLowBlue: CGFloat = 0
+    @objc var inputPercentLowRed: CGFloat = 0
+    @objc var inputPercentLowGreen: CGFloat = 0
+    @objc var inputPercentLowBlue: CGFloat = 0
     
-    var inputPercentHiRed: CGFloat = 0
-    var inputPercentHiGreen: CGFloat = 0
-    var inputPercentHiBlue: CGFloat = 0
+    @objc var inputPercentHiRed: CGFloat = 0
+    @objc var inputPercentHiGreen: CGFloat = 0
+    @objc var inputPercentHiBlue: CGFloat = 0
     
     override var attributes: [String : Any]
     {
@@ -370,7 +370,7 @@ class EndsInContrastStretch: CIFilter, VImageFilter
 
 class ContrastStretch: CIFilter, VImageFilter
 {
-    var inputImage: CIImage?
+    @objc var inputImage: CIImage?
     
     override var attributes: [String : Any]
     {
@@ -436,8 +436,8 @@ class ContrastStretch: CIFilter, VImageFilter
 
 class HistogramSpecification: CIFilter, VImageFilter
 {
-    var inputImage: CIImage?
-    var inputHistogramSource: CIImage?
+    @objc var inputImage: CIImage?
+    @objc var inputHistogramSource: CIImage?
     
     override var attributes: [String : Any]
     {
@@ -476,32 +476,8 @@ class HistogramSpecification: CIFilter, VImageFilter
         var imageBuffer = vImageBufferFromCIImage(ciImage: inputImage, ciContext: ciContext)
         var histogramSourceBuffer = vImageBufferFromCIImage(ciImage: inputHistogramSource, ciContext: ciContext)
         
-        let alpha = [UInt](repeating: 0, count: 256)
-        let red = [UInt](repeating: 0, count: 256)
-        let green = [UInt](repeating: 0, count: 256)
-        let blue = [UInt](repeating: 0, count: 256)
-        
-        let alphaMtPtr = UnsafeMutablePointer<vImagePixelCount>.allocate(capacity: alpha.count)
-        alphaMtPtr.initialize(from: alpha, count: alpha.count)
-
-        let redMtPtr = UnsafeMutablePointer<vImagePixelCount>.allocate(capacity: red.count)
-        redMtPtr.initialize(from: red, count: red.count)
-        
-        let greenMtPtr = UnsafeMutablePointer<vImagePixelCount>.allocate(capacity: green.count)
-        greenMtPtr.initialize(from: green, count: green.count)
-        
-        let blueMtPtr = UnsafeMutablePointer<vImagePixelCount>.allocate(capacity: blue.count)
-        blueMtPtr.initialize(from: blue, count: blue.count)
-        
-        let rgba = [redMtPtr, greenMtPtr, blueMtPtr, alphaMtPtr]
-        
-        let histogram = UnsafeMutablePointer<UnsafeMutablePointer<vImagePixelCount>>.allocate(capacity: rgba.count)
-        histogram.initialize(from: rgba, count: rgba.count)
-        let slientHg = histogram as! UnsafeMutablePointer<UnsafeMutablePointer<vImagePixelCount>?>
-        
-        
-        vImageHistogramCalculation_ARGB8888(&histogramSourceBuffer, slientHg, UInt32(kvImageNoFlags))
-        
+        let (r,g,b,a) = histogramSourceBuffer.calcHistogram()
+        //
         let pixelBuffer = malloc(imageRef.bytesPerRow * imageRef.height)
         
         var outBuffer = vImage_Buffer(
@@ -510,18 +486,33 @@ class HistogramSpecification: CIFilter, VImageFilter
             width: UInt(imageRef.width),
             rowBytes: imageRef.bytesPerRow)
 
-        let alphaPointer = UnsafePointer<vImagePixelCount>(alpha)
-        let redPointer = UnsafePointer<vImagePixelCount>(red)
-        let greenPointer = UnsafePointer<vImagePixelCount>(green)
-        let bluePointer = UnsafePointer<vImagePixelCount>(blue)
+        var histogramBinZero = r
+        var histogramBinOne = g
+        var histogramBinTwo = b
+        var histogramBinThree = a
         
-        let immRGBA = [redPointer, greenPointer, bluePointer, alphaPointer]
-        
-        let rgbaMutablePointer = UnsafeMutablePointer<UnsafePointer<vImagePixelCount>>.allocate(capacity: immRGBA.count)
-        rgbaMutablePointer.initialize(from: immRGBA, count: immRGBA.count)
-        let silentRGBA = rgbaMutablePointer as! UnsafeMutablePointer<UnsafePointer<vImagePixelCount>?>
-        
-        vImageHistogramSpecification_ARGB8888(&imageBuffer, &outBuffer, silentRGBA, UInt32(kvImageNoFlags))
+        histogramBinZero.withUnsafeBufferPointer { zeroPtr in
+            histogramBinOne.withUnsafeBufferPointer { onePtr in
+                histogramBinTwo.withUnsafeBufferPointer { twoPtr in
+                    histogramBinThree.withUnsafeBufferPointer { threePtr in
+                        
+                        var histogramBins = [zeroPtr.baseAddress, onePtr.baseAddress,
+                                             twoPtr.baseAddress, threePtr.baseAddress]
+                        
+                        histogramBins.withUnsafeMutableBufferPointer { histogramBinsPtr in
+                            let error = vImageHistogramSpecification_ARGB8888(&imageBuffer,
+                                                                              &outBuffer,
+                                                                              histogramBinsPtr.baseAddress!,
+                                                                              vImage_Flags(kvImageLeaveAlphaUnchanged))
+                            
+                            guard error == kvImageNoError else {
+                                fatalError("Error specifying histogram: \(error)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
         
         let outImage = CIImage(fromvImageBuffer: outBuffer)
         

@@ -14,8 +14,8 @@ import CoreImage
 
 class ModelIOColorFromTemperature: CIFilter
 {
-    var inputSize = CIVector(x: 640, y: 640)
-    var inputTemperature: CGFloat = 1700
+    @objc var inputSize = CIVector(x: 640, y: 640)
+    @objc var inputTemperature: CGFloat = 1700
     
     override var outputImage: CIImage!
     {
@@ -58,8 +58,8 @@ class ModelIOColorFromTemperature: CIFilter
 
 class ModelIOColorScalarNoise: CIFilter
 {
-    var inputSize = CIVector(x: 640, y: 640)
-    var inputSmoothness: CGFloat = 0.5
+    @objc var inputSize = CIVector(x: 640, y: 640)
+    @objc var inputSmoothness: CGFloat = 0.5
     
     let makeOpaqueKernel = CIColorKernel(source: "kernel vec4 xyz(__sample pixel) { return vec4(pixel.rgb, 1.0); }")
     
@@ -106,7 +106,7 @@ class ModelIOColorScalarNoise: CIFilter
 
 class ModelIOSkyGenerator: CIFilter
 {
-    var inputSize = CIVector(x: 640, y: 640)
+    @objc var inputSize = CIVector(x: 640, y: 640)
     {
         didSet
         {
@@ -114,15 +114,15 @@ class ModelIOSkyGenerator: CIFilter
         }
     }
 
-    var inputTurbidity:CGFloat = 0.75
-    var inputSunElevation: CGFloat = 0.70
-    var inputUpperAtmosphereScattering: CGFloat = 0.2
-    var inputGroundAlbedo: CGFloat = 0.5
-    var inputContrast: CGFloat = 1
-    var inputExposure: CGFloat = 0.5
-    var inputSaturation: CGFloat = 0.0
+    @objc var inputTurbidity:CGFloat = 0.75
+    @objc var inputSunElevation: CGFloat = 0.70
+    @objc var inputUpperAtmosphereScattering: CGFloat = 0.2
+    @objc var inputGroundAlbedo: CGFloat = 0.5
+    @objc var inputContrast: CGFloat = 1
+    @objc var inputExposure: CGFloat = 0.5
+    @objc var inputSaturation: CGFloat = 0.0
     
-    var sky: MDLSkyCubeTexture?
+    @objc var sky: MDLSkyCubeTexture?
     
     override var outputImage: CIImage!
     {

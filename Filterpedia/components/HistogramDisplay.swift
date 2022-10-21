@@ -22,7 +22,39 @@ import UIKit
 import Accelerate.vImage
 
 /// HistogramDisplay displays the RGB histogram of a given CGImage
-/// The vertical scale can be changed with touch movement. 
+/// The vertical scale can be changed with touch movement.
+///
+
+extension vImage_Buffer {
+    
+    mutating func calcHistogram() -> (red: [UInt], green: [UInt], blue: [UInt], alpha: [UInt]) {
+        var histogramBinZero = [vImagePixelCount](repeating: 0, count: 256)
+        var histogramBinOne = [vImagePixelCount](repeating: 0, count: 256)
+        var histogramBinTwo = [vImagePixelCount](repeating: 0, count: 256)
+        var histogramBinThree = [vImagePixelCount](repeating: 0, count: 256)
+        
+        histogramBinZero.withUnsafeMutableBufferPointer { zeroPtr in
+            histogramBinOne.withUnsafeMutableBufferPointer { onePtr in
+                histogramBinTwo.withUnsafeMutableBufferPointer { twoPtr in
+                    histogramBinThree.withUnsafeMutableBufferPointer { threePtr in
+                        
+                        var histogramBins = [zeroPtr.baseAddress, onePtr.baseAddress,
+                                             twoPtr.baseAddress, threePtr.baseAddress]
+                        
+                        histogramBins.withUnsafeMutableBufferPointer { histogramBinsPtr in
+                            let error = vImageHistogramCalculation_ARGB8888(&self, histogramBinsPtr.baseAddress!, UInt32(kvImageNoFlags))
+                            
+                            guard error == kvImageNoError else {
+                                fatalError("Error calculating histogram: \(error)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return (histogramBinZero, histogramBinOne, histogramBinTwo, histogramBinThree)
+    }
+}
 
 class HistogramDisplay: UIView
 {
@@ -46,36 +78,13 @@ class HistogramDisplay: UIView
             nil,
             imageRef,
             UInt32(kvImageNoFlags))
-
-        let red = [UInt](repeating: 0, count: 256)
-        let green = [UInt](repeating: 0, count: 256)
-        let blue = [UInt](repeating: 0, count: 256)
-        let alpha = [UInt](repeating: 0, count: 256)
         
-        let redPtr = UnsafeMutablePointer<vImagePixelCount>.allocate(capacity: red.count)
-        redPtr.initialize(from: red, count: red.count)
+        defer {
+            free(inBuffer.data)
+        }
+        let (r,g,b,_) = inBuffer.calcHistogram()
         
-        let greenPtr = UnsafeMutablePointer<vImagePixelCount>.allocate(capacity: green.count)
-        greenPtr.initialize(from: green, count: green.count)
-        
-        let bluePtr = UnsafeMutablePointer<vImagePixelCount>.allocate(capacity: blue.count)
-        bluePtr.initialize(from: blue, count: blue.count)
-        
-        let alphaPtr = UnsafeMutablePointer<vImagePixelCount>.allocate(capacity: alpha.count)
-        alphaPtr.initialize(from: alpha, count: alpha.count)
-        
-        let rgba = [redPtr, greenPtr, bluePtr, alphaPtr]
-
-        let histogram = UnsafeMutablePointer<UnsafeMutablePointer<vImagePixelCount>>.allocate(capacity: rgba.count)
-        histogram.initialize(from: rgba, count: rgba.count)
-        //just silent
-        let silentHg = histogram as! UnsafeMutablePointer<UnsafeMutablePointer<vImagePixelCount>?>
-        
-        vImageHistogramCalculation_ARGB8888(&inBuffer, silentHg, UInt32(kvImageNoFlags))
-
-        free(inBuffer.data)
-        
-        return (red, green, blue)
+        return (r,g,b)
     }
     
     let scaleLabel: UILabel =

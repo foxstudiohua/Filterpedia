@@ -221,7 +221,7 @@ extension FilterNavigator: UITableViewDataSource
             filterName = supportedFilterNamesInCategories(nil).sorted(by: { CIFilter.localizedName(forFilterName: $0) ?? $0 < CIFilter.localizedName(forFilterName: $1) ?? $1 })[indexPath.row]
         }
         
-        cell.textLabel?.text = CIFilter.localizedNameForFilterName(filterName) ?? (CIFilter(name: filterName)?.attributes[kCIAttributeFilterDisplayName] as? String) ?? filterName
+        cell.textLabel?.text = CIFilter.localizedName(forFilterName: filterName) ?? (CIFilter(name: filterName)?.attributes[kCIAttributeFilterDisplayName] as? String) ?? filterName
         
         return cell
     }

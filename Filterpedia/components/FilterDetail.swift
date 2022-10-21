@@ -112,11 +112,16 @@ class FilterDetail: UIView
         {
             if busy
             {
-                activityIndicator.startAnimating()
+                DispatchQueue.main.async {
+                    self.activityIndicator.startAnimating()
+                }
+                
             }
             else
             {
-                activityIndicator.stopAnimating()
+                DispatchQueue.main.async {
+                    self.activityIndicator.stopAnimating()
+                }
             }
         }
     }
@@ -273,6 +278,7 @@ class FilterDetail: UIView
             }
             
             guard let outputImage = currentFilter.outputImage else {
+                self.busy = false
                 return
             }
             let finalImage: CGImage?

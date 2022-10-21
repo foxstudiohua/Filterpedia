@@ -30,9 +30,9 @@ import CoreImage
 
 class HomogeneousColorBlur: CIFilter
 {
-    var inputImage: CIImage?
-    var inputColorThreshold: CGFloat = 0.2
-    var inputRadius: CGFloat = 10
+    @objc var inputImage: CIImage?
+    @objc var inputColorThreshold: CGFloat = 0.2
+    @objc var inputRadius: CGFloat = 10
     
     override var attributes: [String : Any]
     {
@@ -121,10 +121,10 @@ class HomogeneousColorBlur: CIFilter
 
 class ColorDirectedBlur: CIFilter
 {
-    var inputImage: CIImage?
-    var inputThreshold: CGFloat = 0.5
-    var inputIterations: CGFloat = 4
-    var inputRadius: CGFloat = 10
+    @objc var inputImage: CIImage?
+    @objc var inputThreshold: CGFloat = 0.5
+    @objc var inputIterations: CGFloat = 4
+    @objc var inputRadius: CGFloat = 10
     
     override var attributes: [String : Any]
     {

@@ -13,101 +13,101 @@ import CoreImage
 
 class CausticNoise: CIFilter
 {
-  var inputTime: CGFloat = 1
-  var inputTileSize: CGFloat = 640
-  var inputWidth: CGFloat = 640
-  var inputHeight: CGFloat = 640
-  
-  override var attributes: [String : Any]
-  {
-    return [
-      kCIAttributeFilterDisplayName: "Caustic Noise",
-      
-      "inputTime": [kCIAttributeIdentity: 0,
-        kCIAttributeClass: "NSNumber",
-        kCIAttributeDefault: 1,
-        kCIAttributeDisplayName: "Time",
-        kCIAttributeMin: 0,
-        kCIAttributeSliderMin: 0,
-        kCIAttributeSliderMax: 1000,
-        kCIAttributeType: kCIAttributeTypeScalar],
-      "inputTileSize": [kCIAttributeIdentity: 0,
-        kCIAttributeClass: "NSNumber",
-        kCIAttributeDefault: 640,
-        kCIAttributeDisplayName: "Tile Size",
-        kCIAttributeMin: 10,
-        kCIAttributeSliderMin: 10,
-        kCIAttributeSliderMax: 2048,
-        kCIAttributeType: kCIAttributeTypeScalar],
-      "inputWidth": [kCIAttributeIdentity: 0,
-        kCIAttributeClass: "NSNumber",
-        kCIAttributeDefault: 640,
-        kCIAttributeDisplayName: "Width",
-        kCIAttributeMin: 0,
-        kCIAttributeSliderMin: 0,
-        kCIAttributeSliderMax: 1280,
-        kCIAttributeType: kCIAttributeTypeScalar],
-      "inputHeight": [kCIAttributeIdentity: 0,
-        kCIAttributeClass: "NSNumber",
-        kCIAttributeDefault: 640,
-        kCIAttributeDisplayName: "Height",
-        kCIAttributeMin: 0,
-        kCIAttributeSliderMin: 0,
-        kCIAttributeSliderMax: 1280,
-        kCIAttributeType: kCIAttributeTypeScalar]
-    ]
-  }
-  
-  let causticNoiseKernel = CIColorKernel(
-    source: "kernel vec4 mainImage(float time, float tileSize) " +
-      "{ " +
-      "    vec2 uv = destCoord() / tileSize; " +
-      
-      "    vec2 p = mod(uv * 6.28318530718, 6.28318530718) - 250.0; " +
-      
-      "    vec2 i = vec2(p); " +
-      "    float c = 1.0; " +
-      "    float inten = .005; " +
-      
-      "    for (int n = 0; n < 5; n++) " +
-      "    { " +
-      "        float t = time * (1.0 - (3.5 / float(n+1))); " +
-      "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x)); " +
-      "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten))); " +
-      "    } " +
-      "    c /= 5.0;" +
-      "    c = 1.17-pow(c, 1.4);" +
-      "    vec3 colour = vec3(pow(abs(c), 8.0));" +
-      "    colour = clamp(colour, 0.0, 1.0);" +
-      
-      "    return vec4(colour, 1.0);" +
-    "}"
-  )
-  
-  override var outputImage: CIImage!
-  {
-    guard let causticNoiseKernel = causticNoiseKernel else
+    @objc var inputTime: CGFloat = 1
+    @objc var inputTileSize: CGFloat = 640
+    @objc var inputWidth: CGFloat = 640
+    @objc var inputHeight: CGFloat = 640
+    
+    override var attributes: [String : Any]
     {
-      return nil
+        return [
+            kCIAttributeFilterDisplayName: "Caustic Noise",
+            
+            "inputTime": [kCIAttributeIdentity: 0,
+                             kCIAttributeClass: "NSNumber",
+                           kCIAttributeDefault: 1,
+                       kCIAttributeDisplayName: "Time",
+                               kCIAttributeMin: 0,
+                         kCIAttributeSliderMin: 0,
+                         kCIAttributeSliderMax: 1000,
+                              kCIAttributeType: kCIAttributeTypeScalar],
+            "inputTileSize": [kCIAttributeIdentity: 0,
+                                 kCIAttributeClass: "NSNumber",
+                               kCIAttributeDefault: 640,
+                           kCIAttributeDisplayName: "Tile Size",
+                                   kCIAttributeMin: 10,
+                             kCIAttributeSliderMin: 10,
+                             kCIAttributeSliderMax: 2048,
+                                  kCIAttributeType: kCIAttributeTypeScalar],
+            "inputWidth": [kCIAttributeIdentity: 0,
+                              kCIAttributeClass: "NSNumber",
+                            kCIAttributeDefault: 640,
+                        kCIAttributeDisplayName: "Width",
+                                kCIAttributeMin: 0,
+                          kCIAttributeSliderMin: 0,
+                          kCIAttributeSliderMax: 1280,
+                               kCIAttributeType: kCIAttributeTypeScalar],
+            "inputHeight": [kCIAttributeIdentity: 0,
+                               kCIAttributeClass: "NSNumber",
+                             kCIAttributeDefault: 640,
+                         kCIAttributeDisplayName: "Height",
+                                 kCIAttributeMin: 0,
+                           kCIAttributeSliderMin: 0,
+                           kCIAttributeSliderMax: 1280,
+                                kCIAttributeType: kCIAttributeTypeScalar]
+        ]
     }
     
-    let extent = CGRect(x: 0, y: 0, width: inputWidth, height: inputHeight)
+    let causticNoiseKernel = CIColorKernel(
+        source: "kernel vec4 mainImage(float time, float tileSize) " +
+        "{ " +
+        "    vec2 uv = destCoord() / tileSize; " +
+        
+        "    vec2 p = mod(uv * 6.28318530718, 6.28318530718) - 250.0; " +
+        
+        "    vec2 i = vec2(p); " +
+        "    float c = 1.0; " +
+        "    float inten = .005; " +
+        
+        "    for (int n = 0; n < 5; n++) " +
+        "    { " +
+        "        float t = time * (1.0 - (3.5 / float(n+1))); " +
+        "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x)); " +
+        "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten))); " +
+        "    } " +
+        "    c /= 5.0;" +
+        "    c = 1.17-pow(c, 1.4);" +
+        "    vec3 colour = vec3(pow(abs(c), 8.0));" +
+        "    colour = clamp(colour, 0.0, 1.0);" +
+        
+        "    return vec4(colour, 1.0);" +
+        "}"
+    )
     
-      return causticNoiseKernel.apply(extent: extent, arguments: [inputTime, inputTileSize])
-  }
+    override var outputImage: CIImage!
+    {
+        guard let causticNoiseKernel = causticNoiseKernel else
+        {
+            return nil
+        }
+        
+        let extent = CGRect(x: 0, y: 0, width: inputWidth, height: inputHeight)
+        
+        return causticNoiseKernel.apply(extent: extent, arguments: [inputTime, inputTileSize])
+    }
 }
 
 // MARK: CausticRefraction
 
 class CausticRefraction: CIFilter
 {
-    var inputImage: CIImage?
-    var inputRefractiveIndex: CGFloat = 4.0
-    var inputLensScale: CGFloat = 50
-    var inputLightingAmount: CGFloat = 1.5
-    var inputTime: CGFloat = 1
-    var inputTileSize: CGFloat = 640
-    var inputSoftening: CGFloat = 3
+    @objc var inputImage: CIImage?
+    @objc var inputRefractiveIndex: CGFloat = 4.0
+    @objc var inputLensScale: CGFloat = 50
+    @objc var inputLightingAmount: CGFloat = 1.5
+    @objc var inputTime: CGFloat = 1
+    @objc var inputTileSize: CGFloat = 640
+    @objc var inputSoftening: CGFloat = 3
     
     override var attributes: [String : Any]
     {
@@ -115,96 +115,96 @@ class CausticRefraction: CIFilter
             kCIAttributeFilterDisplayName: "Caustic Refraction",
             
             "inputImage": [kCIAttributeIdentity: 0,
-                kCIAttributeClass: "CIImage",
-                kCIAttributeDisplayName: "Image",
-                kCIAttributeType: kCIAttributeTypeImage],
+                              kCIAttributeClass: "CIImage",
+                        kCIAttributeDisplayName: "Image",
+                               kCIAttributeType: kCIAttributeTypeImage],
             
             "inputText": [kCIAttributeIdentity: 0,
-                kCIAttributeClass: "NSString",
-                kCIAttributeDisplayName: "Text",
-                kCIAttributeDefault: "Filterpedia",
-                kCIAttributeType: kCIAttributeTypeScalar],
+                             kCIAttributeClass: "NSString",
+                       kCIAttributeDisplayName: "Text",
+                           kCIAttributeDefault: "Filterpedia",
+                              kCIAttributeType: kCIAttributeTypeScalar],
             
             "inputRefractiveIndex": [kCIAttributeIdentity: 0,
-                kCIAttributeClass: "NSNumber",
-                kCIAttributeDefault: 4.0,
-                kCIAttributeDisplayName: "Refractive Index",
-                kCIAttributeMin: -4.0,
-                kCIAttributeSliderMin: -10.0,
-                kCIAttributeSliderMax: 10,
-                kCIAttributeType: kCIAttributeTypeScalar],
+                                        kCIAttributeClass: "NSNumber",
+                                      kCIAttributeDefault: 4.0,
+                                  kCIAttributeDisplayName: "Refractive Index",
+                                          kCIAttributeMin: -4.0,
+                                    kCIAttributeSliderMin: -10.0,
+                                    kCIAttributeSliderMax: 10,
+                                         kCIAttributeType: kCIAttributeTypeScalar],
             
             "inputLensScale": [kCIAttributeIdentity: 0,
-                kCIAttributeClass: "NSNumber",
-                kCIAttributeDefault: 50,
-                kCIAttributeDisplayName: "Lens Scale",
-                kCIAttributeMin: 1,
-                kCIAttributeSliderMin: 1,
-                kCIAttributeSliderMax: 100,
-                kCIAttributeType: kCIAttributeTypeScalar],
+                                  kCIAttributeClass: "NSNumber",
+                                kCIAttributeDefault: 50,
+                            kCIAttributeDisplayName: "Lens Scale",
+                                    kCIAttributeMin: 1,
+                              kCIAttributeSliderMin: 1,
+                              kCIAttributeSliderMax: 100,
+                                   kCIAttributeType: kCIAttributeTypeScalar],
             
             "inputLightingAmount": [kCIAttributeIdentity: 0,
-                kCIAttributeClass: "NSNumber",
-                kCIAttributeDefault: 1.5,
-                kCIAttributeDisplayName: "Lighting Amount",
-                kCIAttributeMin: 0,
-                kCIAttributeSliderMin: 0,
-                kCIAttributeSliderMax: 5,
-                kCIAttributeType: kCIAttributeTypeScalar],
+                                       kCIAttributeClass: "NSNumber",
+                                     kCIAttributeDefault: 1.5,
+                                 kCIAttributeDisplayName: "Lighting Amount",
+                                         kCIAttributeMin: 0,
+                                   kCIAttributeSliderMin: 0,
+                                   kCIAttributeSliderMax: 5,
+                                        kCIAttributeType: kCIAttributeTypeScalar],
             
             "inputTime": [kCIAttributeIdentity: 0,
-                kCIAttributeClass: "NSNumber",
-                kCIAttributeDefault: 1,
-                kCIAttributeDisplayName: "Time",
-                kCIAttributeMin: 0,
-                kCIAttributeSliderMin: 0,
-                kCIAttributeSliderMax: 1000,
-                kCIAttributeType: kCIAttributeTypeScalar],
+                             kCIAttributeClass: "NSNumber",
+                           kCIAttributeDefault: 1,
+                       kCIAttributeDisplayName: "Time",
+                               kCIAttributeMin: 0,
+                         kCIAttributeSliderMin: 0,
+                         kCIAttributeSliderMax: 1000,
+                              kCIAttributeType: kCIAttributeTypeScalar],
             
             "inputTileSize": [kCIAttributeIdentity: 0,
-                kCIAttributeClass: "NSNumber",
-                kCIAttributeDefault: 640,
-                kCIAttributeDisplayName: "Tile Size",
-                kCIAttributeMin: 10,
-                kCIAttributeSliderMin: 10,
-                kCIAttributeSliderMax: 2048,
-                kCIAttributeType: kCIAttributeTypeScalar],
+                                 kCIAttributeClass: "NSNumber",
+                               kCIAttributeDefault: 640,
+                           kCIAttributeDisplayName: "Tile Size",
+                                   kCIAttributeMin: 10,
+                             kCIAttributeSliderMin: 10,
+                             kCIAttributeSliderMax: 2048,
+                                  kCIAttributeType: kCIAttributeTypeScalar],
             
             "inputSoftening": [kCIAttributeIdentity: 0,
-                kCIAttributeClass: "NSNumber",
-                kCIAttributeDefault: 3,
-                kCIAttributeDisplayName: "Softening",
-                kCIAttributeMin: 0,
-                kCIAttributeSliderMin: 0,
-                kCIAttributeSliderMax: 20,
-                kCIAttributeType: kCIAttributeTypeScalar],
+                                  kCIAttributeClass: "NSNumber",
+                                kCIAttributeDefault: 3,
+                            kCIAttributeDisplayName: "Softening",
+                                    kCIAttributeMin: 0,
+                              kCIAttributeSliderMin: 0,
+                              kCIAttributeSliderMax: 20,
+                                   kCIAttributeType: kCIAttributeTypeScalar],
         ]
     }
     
     override var outputImage: CIImage!
     {
-      guard let inputImage = inputImage,
-            let refractingKernel = refractingKernel else
-      {
-        return nil
-      }
-      
-      let extent = inputImage.extent
-      
-      let refractingImage = CIFilter(
-          name: "CausticNoise",
-          parameters: ["inputTime": inputTime, "inputTileSize": inputTileSize])?.outputImage!
+        guard let inputImage = inputImage,
+              let refractingKernel = refractingKernel else
+        {
+            return nil
+        }
+        
+        let extent = inputImage.extent
+        
+        let refractingImage = CIFilter(
+            name: "CausticNoise",
+            parameters: ["inputTime": inputTime, "inputTileSize": inputTileSize])?.outputImage!
             .applyingFilter(
                 "CIGaussianBlur",
                 parameters: [kCIInputRadiusKey: inputSoftening])
-      
+        
         let arguments:[Any] = [
-        inputImage,
-        refractingImage!,
-        inputRefractiveIndex,
-        inputLensScale,
-        inputLightingAmount]
-      
+            inputImage,
+            refractingImage!,
+            inputRefractiveIndex,
+            inputLensScale,
+            inputLightingAmount]
+        
         return refractingKernel.apply(
             extent: extent,
             roiCallback:
@@ -214,7 +214,7 @@ class CausticRefraction: CIFilter
                 },
             arguments: arguments)
     }
-  
+    
     let refractingKernel = CIKernel(
         source: "float lumaAtOffset(sampler source, vec2 origin, vec2 offset)" +
         "{" +
@@ -243,6 +243,6 @@ class CausticRefraction: CIFilter
         " outputPixel += (eastLuma - westLuma) * lightingAmount ;" +
         
         " return vec4(outputPixel, 1.0);" +
-      "}"
+        "}"
     )
 }

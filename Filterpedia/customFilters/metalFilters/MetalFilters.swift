@@ -251,7 +251,7 @@ class MetalGeneratorFilter: MetalFilter
 
 class MetalImageFilter: MetalFilter
 {
-    var inputImage: CIImage?
+    @objc var inputImage: CIImage?
     
     override func textureInvalid() -> Bool
     {

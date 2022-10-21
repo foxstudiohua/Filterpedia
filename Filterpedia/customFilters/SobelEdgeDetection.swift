@@ -96,9 +96,9 @@ class SobelEdgeDetectionBase: CIFilter
             .cropped(to: sourceImage.extent)
     }
     
-    var inputImage : CIImage?
-    var inputBias: CGFloat = 1
-    var inputWeight: CGFloat = 1
+    @objc var inputImage : CIImage?
+    @objc var inputBias: CGFloat = 1
+    @objc var inputWeight: CGFloat = 1
 
     override func setDefaults()
     {

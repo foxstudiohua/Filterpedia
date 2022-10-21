@@ -82,16 +82,16 @@ class MultiBandHSV: CIFilter
         return CIColorKernel(source: shaderString)!
     }()
     
-    var inputImage: CIImage?
+    @objc var inputImage: CIImage?
     
-    var inputRedShift = CIVector(x: 0, y: 1, z: 1)
-    var inputOrangeShift = CIVector(x: 0, y: 1, z: 1)
-    var inputYellowShift = CIVector(x: 0, y: 1, z: 1)
-    var inputGreenShift = CIVector(x: 0, y: 1, z: 1)
-    var inputAquaShift = CIVector(x: 0, y: 1, z: 1)
-    var inputBlueShift = CIVector(x: 0, y: 1, z: 1)
-    var inputPurpleShift = CIVector(x: 0, y: 1, z: 1)
-    var inputMagentaShift = CIVector(x: 0, y: 1, z: 1)
+    @objc var inputRedShift = CIVector(x: 0, y: 1, z: 1)
+    @objc var inputOrangeShift = CIVector(x: 0, y: 1, z: 1)
+    @objc var inputYellowShift = CIVector(x: 0, y: 1, z: 1)
+    @objc var inputGreenShift = CIVector(x: 0, y: 1, z: 1)
+    @objc var inputAquaShift = CIVector(x: 0, y: 1, z: 1)
+    @objc var inputBlueShift = CIVector(x: 0, y: 1, z: 1)
+    @objc var inputPurpleShift = CIVector(x: 0, y: 1, z: 1)
+    @objc var inputMagentaShift = CIVector(x: 0, y: 1, z: 1)
     
     override var attributes: [String : Any]
     {
